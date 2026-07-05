@@ -1,0 +1,1 @@
+- [BrainBox AI setup](brainbox-ai-setup.md) — Hive adapters written manually (no build_runner); dark mode enforced; all 9 screens built.
