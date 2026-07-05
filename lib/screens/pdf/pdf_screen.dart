@@ -23,7 +23,7 @@ class _PdfScreenState extends State<PdfScreen> {
   Future<void> _pickPdf(BuildContext context) async {
     final l = AppLocalizations(context.read<LanguageProvider>().locale);
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf'],
       );

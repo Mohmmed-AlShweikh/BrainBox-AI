@@ -94,6 +94,7 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
     final l = AppLocalizations(context.watch<LanguageProvider>().locale);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l.translate('askTitle')),

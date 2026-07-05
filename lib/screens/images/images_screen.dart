@@ -147,7 +147,7 @@ class _ImagesScreenState extends State<ImagesScreen> {
                   crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 0.78,
+                  childAspectRatio: 0.6,
                 ),
                 itemCount: images.length,
                 itemBuilder: (context, index) {

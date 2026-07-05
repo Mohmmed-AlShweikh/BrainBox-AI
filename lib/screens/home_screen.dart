@@ -40,7 +40,7 @@ class HomeScreen extends StatelessWidget {
         slivers: [
           // App bar
           SliverAppBar(
-            expandedHeight: 130,
+            expandedHeight: 120,
             floating: true,
             pinned: true,
             backgroundColor: AppColors.background,
@@ -108,7 +108,7 @@ class HomeScreen extends StatelessWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 1.5,
+                  childAspectRatio: 1.0,
                   children: [
                     StatCard(
                       label: l.translate('notes'),
