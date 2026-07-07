@@ -25,9 +25,16 @@ class PdfCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.card,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          color: AppColors.cardFor(context),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.borderFor(context)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.pdfColor.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -71,7 +78,7 @@ class PdfCard extends StatelessWidget {
                           style: GoogleFonts.inter(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                            color: AppColors.textPrimaryFor(context),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -98,7 +105,7 @@ class PdfCard extends StatelessWidget {
                       pdf.description,
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryFor(context),
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -115,7 +122,13 @@ class PdfCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text('·', style: GoogleFonts.inter(color: AppColors.textHint, fontSize: 11)),
+                      Text(
+                        '·',
+                        style: GoogleFonts.inter(
+                          color: AppColors.textHint,
+                          fontSize: 11,
+                        ),
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         _formatDate(pdf.createdAt),

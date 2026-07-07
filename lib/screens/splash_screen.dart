@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/app_colors.dart';
 import 'main_screen.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,42 +13,29 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnim;
-  late Animation<double> _scaleAnim;
-  late Animation<double> _slideAnim;
+  late final AnimationController _controller;
+  late final Animation<double> _fadeAnim;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FlutterNativeSplash.remove();
+    });
+
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1400),
+      duration: const Duration(milliseconds: 700),
     );
 
-    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0, 0.6)),
-    );
-    _scaleAnim = Tween<double>(begin: 0.75, end: 1).animate(
-      CurvedAnimation(
-          parent: _controller, curve: const Interval(0, 0.6, curve: Curves.elasticOut)),
-    );
-    _slideAnim = Tween<double>(begin: 20, end: 0).animate(
-      CurvedAnimation(parent: _controller, curve: const Interval(0.4, 1)),
-    );
+    _fadeAnim = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
 
     _controller.forward();
 
-    Future.delayed(const Duration(milliseconds: 2400), () {
+    Future.delayed(const Duration(milliseconds: 1400), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const MainScreen(),
-            transitionsBuilder: (_, animation, __, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 400),
-          ),
+          MaterialPageRoute(builder: (_) => const MainScreen()),
         );
       }
     });
@@ -62,84 +50,74 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF6C63FF),
       body: Container(
-        decoration: const BoxDecoration(gradient: AppColors.splashGradient),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF6C63FF), Color(0xFF4F46E5)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Center(
           child: AnimatedBuilder(
             animation: _controller,
             builder: (context, child) {
               return Opacity(
                 opacity: _fadeAnim.value,
-                child: Transform.scale(
-                  scale: _scaleAnim.value,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // App icon
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.primaryLight, AppColors.primary],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(28),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primary.withOpacity(0.5),
-                              blurRadius: 30,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.psychology_rounded,
-                          color: Colors.white,
-                          size: 52,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                   Container(
+                    margin: const EdgeInsets.only(top: 100),
+  width: 170,
+  height: 170,
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(42),
+    image: const DecorationImage(
+      image: AssetImage("assets/logo.png"),
+      fit: BoxFit.cover,
+    ),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black26,
+        blurRadius: 18,
+        offset: Offset(0, 8),
+      ),
+    ],
+  ),),
+                    const SizedBox(height: 24),
+                    Text(
+                      'BrainBox AI',
+                      style: GoogleFonts.inter(
+                        fontSize: 30,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Your personal memory assistant',
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        color: Colors.white.withOpacity(0.82),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.white.withOpacity(0.85),
                         ),
                       ),
-                      const SizedBox(height: 28),
-                      Transform.translate(
-                        offset: Offset(0, _slideAnim.value),
-                        child: Column(
-                          children: [
-                            Text(
-                              'BrainBox AI',
-                              style: GoogleFonts.inter(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Your personal memory assistant',
-                              style: GoogleFonts.inter(
-                                fontSize: 15,
-                                color: AppColors.textSecondary,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 80),
-                      // Loading indicator
-                      SizedBox(
-                        width: 32,
-                        height: 32,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColors.primary.withOpacity(0.7),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
             },

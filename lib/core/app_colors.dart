@@ -1,6 +1,46 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
+  static Color backgroundFor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? background
+        : lightBackground;
+  }
+
+  static Color surfaceFor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? surface
+        : lightSurface;
+  }
+
+  static Color cardFor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark ? card : lightCard;
+  }
+
+  static Color borderFor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? border
+        : lightBorder;
+  }
+
+  static Color textPrimaryFor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? textPrimary
+        : lightTextPrimary;
+  }
+
+  static Color textSecondaryFor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? textSecondary
+        : lightTextSecondary;
+  }
+
+  static Color textHintFor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? textHint
+        : lightTextHint;
+  }
+
   // Dark theme palette
   static const Color background = Color(0xFF0A0E1A);
   static const Color surface = Color(0xFF141824);
@@ -19,6 +59,15 @@ class AppColors {
   static const Color textPrimary = Color(0xFFF1F5F9);
   static const Color textSecondary = Color(0xFF94A3B8);
   static const Color textHint = Color(0xFF475569);
+
+  // Light theme palette
+  static const Color lightBackground = Color(0xFFF5F7FF);
+  static const Color lightSurface = Color(0xFFFFFFFF);
+  static const Color lightCard = Color(0xFFFFFFFF);
+  static const Color lightBorder = Color(0xFFE2E8F0);
+  static const Color lightTextPrimary = Color(0xFF0F172A);
+  static const Color lightTextSecondary = Color(0xFF475569);
+  static const Color lightTextHint = Color(0xFF94A3B8);
 
   // Status
   static const Color success = Color(0xFF22C55E);

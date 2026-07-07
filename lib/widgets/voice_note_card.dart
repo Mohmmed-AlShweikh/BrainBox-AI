@@ -24,9 +24,16 @@ class VoiceNoteCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.card,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          color: AppColors.cardFor(context),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.borderFor(context)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.voiceColor.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -57,7 +64,7 @@ class VoiceNoteCard extends StatelessWidget {
                           style: GoogleFonts.inter(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                            color: AppColors.textPrimaryFor(context),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -117,8 +124,28 @@ class VoiceNoteCard extends StatelessWidget {
   }
 
   Widget _buildWaveform() {
-    final heights = [4.0, 8.0, 12.0, 6.0, 10.0, 14.0, 8.0, 5.0, 11.0, 7.0,
-        9.0, 13.0, 6.0, 10.0, 4.0, 8.0, 12.0, 7.0, 5.0, 9.0];
+    final heights = [
+      4.0,
+      8.0,
+      12.0,
+      6.0,
+      10.0,
+      14.0,
+      8.0,
+      5.0,
+      11.0,
+      7.0,
+      9.0,
+      13.0,
+      6.0,
+      10.0,
+      4.0,
+      8.0,
+      12.0,
+      7.0,
+      5.0,
+      9.0,
+    ];
     return Row(
       children: heights.map((h) {
         return Container(

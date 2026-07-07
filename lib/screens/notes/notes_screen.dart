@@ -29,9 +29,7 @@ class _NotesScreenState extends State<NotesScreen> {
   void _openNote(BuildContext context, {String? noteId}) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => NoteDetailScreen(noteId: noteId),
-      ),
+      MaterialPageRoute(builder: (_) => NoteDetailScreen(noteId: noteId)),
     );
   }
 
@@ -57,9 +55,9 @@ class _NotesScreenState extends State<NotesScreen> {
     );
     if (confirmed == true && context.mounted) {
       await context.read<NotesProvider>().deleteNote(id);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.translate('deleteSuccess'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.translate('deleteSuccess'))));
     }
   }
 
@@ -72,43 +70,144 @@ class _NotesScreenState extends State<NotesScreen> {
         : provider.searchNotes(_searchQuery);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundFor(context),
       appBar: AppBar(
         title: Text(l.translate('notes')),
-        backgroundColor: AppColors.background,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_rounded),
-            onPressed: () => _openNote(context),
-          ),
-        ],
+        backgroundColor: AppColors.backgroundFor(context),
       ),
       body: Column(
         children: [
-          // Search bar
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.notesColor.withOpacity(0.18),
+                  AppColors.primary.withOpacity(0.08),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppColors.borderFor(context).withOpacity(0.7),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.notesColor.withOpacity(0.16),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(
+                    Icons.sticky_note_2_rounded,
+                    color: AppColors.notesColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l.translate('notes'),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimaryFor(context),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'أضف ملاحظاتك وأبقي أفكارك مرتبة بكل أناقة',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondaryFor(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceFor(context),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '${notes.length}',
+                    style: TextStyle(
+                      color: AppColors.notesColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
             child: TextField(
               controller: _searchController,
               onChanged: (v) => setState(() => _searchQuery = v),
               decoration: InputDecoration(
+                filled: true,
+                fillColor: AppColors.surfaceFor(context),
                 hintText: l.translate('searchHint'),
-                prefixIcon: const Icon(Icons.search_rounded,
-                    color: AppColors.textHint, size: 20),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 14,
+                ),
+                prefixIcon: Icon(
+                  Icons.search_rounded,
+                  color: AppColors.textHintFor(context),
+                  size: 20,
+                ),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.close_rounded,
-                            color: AppColors.textHint, size: 18),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: AppColors.textHintFor(context),
+                          size: 18,
+                        ),
                         onPressed: () {
                           _searchController.clear();
                           setState(() => _searchQuery = '');
                         },
                       )
                     : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(
+                    color: AppColors.primary,
+                    width: 1.2,
+                  ),
+                ),
               ),
             ),
           ),
-          // Notes list
           Expanded(
             child: notes.isEmpty
                 ? EmptyState(
@@ -141,8 +240,10 @@ class _NotesScreenState extends State<NotesScreen> {
                                       color: AppColors.error.withOpacity(0.15),
                                       borderRadius: BorderRadius.circular(16),
                                     ),
-                                    child: const Icon(Icons.delete_outline_rounded,
-                                        color: AppColors.error),
+                                    child: const Icon(
+                                      Icons.delete_outline_rounded,
+                                      color: AppColors.error,
+                                    ),
                                   ),
                                   confirmDismiss: (_) async {
                                     await _deleteNote(context, note.id);
@@ -150,11 +251,13 @@ class _NotesScreenState extends State<NotesScreen> {
                                   },
                                   child: NoteCard(
                                     note: note,
-                                    onTap: () => _openNote(context, noteId: note.id),
+                                    onTap: () =>
+                                        _openNote(context, noteId: note.id),
                                     onFavorite: () => context
                                         .read<NotesProvider>()
                                         .toggleFavorite(note),
-                                    onDelete: () => _deleteNote(context, note.id),
+                                    onDelete: () =>
+                                        _deleteNote(context, note.id),
                                   ),
                                 ),
                               ),

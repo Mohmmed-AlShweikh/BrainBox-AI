@@ -38,46 +38,58 @@ class TimelineScreen extends StatelessWidget {
     final items = <TimelineItem>[];
 
     for (final note in context.read<NotesProvider>().notes) {
-      items.add(TimelineItem(
-        id: note.id,
-        title: note.title,
-        subtitle: note.content.length > 60
-            ? '${note.content.substring(0, 60)}...'
-            : note.content,
-        date: note.createdAt,
-        type: TimelineItemType.note,
-        data: note,
-      ));
+      items.add(
+        TimelineItem(
+          id: note.id,
+          title: note.title,
+          subtitle: note.content.length > 60
+              ? '${note.content.substring(0, 60)}...'
+              : note.content,
+          date: note.createdAt,
+          type: TimelineItemType.note,
+          data: note,
+        ),
+      );
     }
     for (final img in context.read<ImagesProvider>().images) {
-      items.add(TimelineItem(
-        id: img.id,
-        title: img.title,
-        subtitle: img.description.isNotEmpty ? img.description : 'Image memory',
-        date: img.createdAt,
-        type: TimelineItemType.image,
-        data: img,
-      ));
+      items.add(
+        TimelineItem(
+          id: img.id,
+          title: img.title,
+          subtitle: img.description.isNotEmpty
+              ? img.description
+              : 'Image memory',
+          date: img.createdAt,
+          type: TimelineItemType.image,
+          data: img,
+        ),
+      );
     }
     for (final v in context.read<VoiceNotesProvider>().voiceNotes) {
-      items.add(TimelineItem(
-        id: v.id,
-        title: v.title,
-        subtitle: 'Voice note · ${v.formattedDuration}',
-        date: v.createdAt,
-        type: TimelineItemType.voice,
-        data: v,
-      ));
+      items.add(
+        TimelineItem(
+          id: v.id,
+          title: v.title,
+          subtitle: 'Voice note · ${v.formattedDuration}',
+          date: v.createdAt,
+          type: TimelineItemType.voice,
+          data: v,
+        ),
+      );
     }
     for (final pdf in context.read<PdfProvider>().pdfs) {
-      items.add(TimelineItem(
-        id: pdf.id,
-        title: pdf.title,
-        subtitle: pdf.description.isNotEmpty ? pdf.description : 'PDF document',
-        date: pdf.createdAt,
-        type: TimelineItemType.pdf,
-        data: pdf,
-      ));
+      items.add(
+        TimelineItem(
+          id: pdf.id,
+          title: pdf.title,
+          subtitle: pdf.description.isNotEmpty
+              ? pdf.description
+              : 'PDF document',
+          date: pdf.createdAt,
+          type: TimelineItemType.pdf,
+          data: pdf,
+        ),
+      );
     }
 
     items.sort((a, b) => b.date.compareTo(a.date));
@@ -85,7 +97,9 @@ class TimelineScreen extends StatelessWidget {
   }
 
   Map<String, List<TimelineItem>> _groupByDate(
-      List<TimelineItem> items, AppLocalizations l) {
+    List<TimelineItem> items,
+    AppLocalizations l,
+  ) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
@@ -94,8 +108,7 @@ class TimelineScreen extends StatelessWidget {
     final groups = <String, List<TimelineItem>>{};
 
     for (final item in items) {
-      final itemDate =
-          DateTime(item.date.year, item.date.month, item.date.day);
+      final itemDate = DateTime(item.date.year, item.date.month, item.date.day);
       String group;
       if (itemDate == today) {
         group = l.translate('today');
@@ -144,10 +157,10 @@ class TimelineScreen extends StatelessWidget {
     final groups = _groupByDate(items, l);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundFor(context),
       appBar: AppBar(
         title: Text(l.translate('timelineTitle')),
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundFor(context),
       ),
       body: items.isEmpty
           ? EmptyState(
@@ -178,9 +191,13 @@ class TimelineScreen extends StatelessWidget {
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 4),
+                                      horizontal: 12,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.primary.withOpacity(0.15),
+                                      color: AppColors.primary.withOpacity(
+                                        0.15,
+                                      ),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
@@ -195,14 +212,16 @@ class TimelineScreen extends StatelessWidget {
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Divider(
-                                      color: AppColors.border,
+                                      color: AppColors.borderFor(context),
                                       height: 1,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            ...groupItems.map((item) => _buildTimelineCard(item)),
+                            ...groupItems.map(
+                              (item) => _buildTimelineCard(context, item),
+                            ),
                           ],
                         ),
                       ),
@@ -214,7 +233,7 @@ class TimelineScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineCard(TimelineItem item) {
+  Widget _buildTimelineCard(BuildContext context, TimelineItem item) {
     final color = _typeColor(item.type);
     final icon = _typeIcon(item.type);
 
@@ -238,7 +257,7 @@ class TimelineScreen extends StatelessWidget {
               Container(
                 width: 2,
                 height: 60,
-                color: AppColors.border,
+                color: AppColors.borderFor(context),
               ),
             ],
           ),
@@ -249,9 +268,9 @@ class TimelineScreen extends StatelessWidget {
               margin: const EdgeInsets.only(top: 4),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: AppColors.card,
+                color: AppColors.cardFor(context),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: AppColors.borderFor(context)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +280,7 @@ class TimelineScreen extends StatelessWidget {
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: AppColors.textPrimaryFor(context),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -272,7 +291,7 @@ class TimelineScreen extends StatelessWidget {
                       item.subtitle,
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryFor(context),
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -283,7 +302,7 @@ class TimelineScreen extends StatelessWidget {
                     _formatTime(item.date),
                     style: GoogleFonts.inter(
                       fontSize: 11,
-                      color: AppColors.textHint,
+                      color: AppColors.textHintFor(context),
                     ),
                   ),
                 ],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'core/app_theme.dart';
 import 'providers/theme_provider.dart';
 import 'providers/language_provider.dart';
@@ -16,8 +16,9 @@ import 'screens/splash_screen.dart';
 import 'utils/app_localizations.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // Force portrait orientation on phones (allow landscape on tablets)
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -60,15 +61,13 @@ class BrainBoxApp extends StatelessWidget {
           return MaterialApp(
             title: 'BrainBox AI',
             debugShowCheckedModeBanner: false,
-            theme: AppTheme.darkTheme,
+            theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            // Dark mode is required; ThemeProvider toggle persisted for future light theme support
-            themeMode: ThemeMode.dark,
+            themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
             locale: langProvider.locale,
-            supportedLocales: const [
-              Locale('en'),
-              Locale('ar'),
-            ],
+            supportedLocales: const [Locale('en'), Locale('ar')],
             localizationsDelegates: const [
               AppLocalizationsDelegate(),
               GlobalMaterialLocalizations.delegate,

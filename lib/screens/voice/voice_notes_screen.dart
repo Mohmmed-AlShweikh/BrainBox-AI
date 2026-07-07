@@ -95,7 +95,7 @@ class _VoiceNotesScreenState extends State<VoiceNotesScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.surfaceFor(context),
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -115,7 +115,7 @@ class _VoiceNotesScreenState extends State<VoiceNotesScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.border,
+                color: AppColors.borderFor(context),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -145,17 +145,15 @@ class _VoiceNotesScreenState extends State<VoiceNotesScreen> {
                   final title = titleController.text.trim();
                   Navigator.pop(ctx);
                   await context.read<VoiceNotesProvider>().saveVoiceNote(
-                        title: title.isEmpty
-                            ? 'Voice Note ${DateTime.now().millisecondsSinceEpoch}'
-                            : title,
-                        filePath: _recordingPath!,
-                        durationSeconds: _recordingSeconds,
-                      );
+                    title: title.isEmpty
+                        ? 'Voice Note ${DateTime.now().millisecondsSinceEpoch}'
+                        : title,
+                    filePath: _recordingPath!,
+                    durationSeconds: _recordingSeconds,
+                  );
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text(l.translate('voiceNoteSaved'))),
+                      SnackBar(content: Text(l.translate('voiceNoteSaved'))),
                     );
                   }
                 },
@@ -230,29 +228,117 @@ class _VoiceNotesScreenState extends State<VoiceNotesScreen> {
     final voiceNotes = context.watch<VoiceNotesProvider>().voiceNotes;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundFor(context),
       appBar: AppBar(
         title: Text(l.translate('voice')),
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundFor(context),
       ),
       body: Column(
         children: [
-          // Recording UI
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.voiceColor.withOpacity(0.18),
+                  AppColors.accent.withOpacity(0.1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppColors.borderFor(context).withOpacity(0.7),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.voiceColor.withOpacity(0.08),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.voiceColor.withOpacity(0.16),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(
+                    Icons.mic_rounded,
+                    color: AppColors.voiceColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l.translate('voice'),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimaryFor(context),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'سجل أفكارك بصوتك واحفظها بسهولة',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondaryFor(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceFor(context),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '${voiceNotes.length}',
+                    style: TextStyle(
+                      color: AppColors.voiceColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            margin: const EdgeInsets.all(16),
+            margin: const EdgeInsets.fromLTRB(16, 6, 16, 12),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: _isRecording
                   ? AppColors.voiceColor.withOpacity(0.1)
-                  : AppColors.card,
+                  : AppColors.cardFor(context),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: _isRecording
                     ? AppColors.voiceColor.withOpacity(0.5)
-                    : AppColors.border,
+                    : AppColors.borderFor(context),
                 width: _isRecording ? 2 : 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.voiceColor.withOpacity(0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
             child: Column(
               children: [
@@ -271,7 +357,7 @@ class _VoiceNotesScreenState extends State<VoiceNotesScreen> {
                     style: GoogleFonts.inter(
                       fontSize: 36,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: AppColors.textPrimaryFor(context),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -280,7 +366,7 @@ class _VoiceNotesScreenState extends State<VoiceNotesScreen> {
                     l.translate('tapToRecord'),
                     style: GoogleFonts.inter(
                       fontSize: 14,
-                      color: AppColors.textSecondary,
+                      color: AppColors.textSecondaryFor(context),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -300,10 +386,11 @@ class _VoiceNotesScreenState extends State<VoiceNotesScreen> {
                           : AppColors.voiceColor,
                       boxShadow: [
                         BoxShadow(
-                          color: (_isRecording
-                                  ? AppColors.error
-                                  : AppColors.voiceColor)
-                              .withOpacity(0.4),
+                          color:
+                              (_isRecording
+                                      ? AppColors.error
+                                      : AppColors.voiceColor)
+                                  .withOpacity(0.4),
                           blurRadius: 20,
                           spreadRadius: 2,
                         ),
@@ -356,8 +443,9 @@ class _VoiceNotesScreenState extends State<VoiceNotesScreen> {
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: const Icon(
-                                        Icons.delete_outline_rounded,
-                                        color: AppColors.error),
+                                      Icons.delete_outline_rounded,
+                                      color: AppColors.error,
+                                    ),
                                   ),
                                   confirmDismiss: (_) async {
                                     await _deleteVoiceNote(context, note.id);
@@ -370,8 +458,8 @@ class _VoiceNotesScreenState extends State<VoiceNotesScreen> {
                                       children: [
                                         VoiceNoteCard(
                                           voiceNote: note,
-                                          onTap: () => _playNote(
-                                              note.id, note.filePath),
+                                          onTap: () =>
+                                              _playNote(note.id, note.filePath),
                                           onFavorite: () => context
                                               .read<VoiceNotesProvider>()
                                               .toggleFavorite(note),

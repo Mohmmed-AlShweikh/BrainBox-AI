@@ -25,26 +25,35 @@ class ImageCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.card,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          color: AppColors.cardFor(context),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.borderFor(context)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.imagesColor.withOpacity(0.06),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image thumbnail
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
               child: SizedBox(
                 height: 140,
                 width: double.infinity,
                 child: file.existsSync()
                     ? Image.file(file, fit: BoxFit.cover)
                     : Container(
-                        color: AppColors.surface,
-                        child: const Icon(
+                        color: AppColors.surfaceFor(context),
+                        child: Icon(
                           Icons.broken_image_outlined,
-                          color: AppColors.textHint,
+                          color: AppColors.textHintFor(context),
                           size: 40,
                         ),
                       ),
@@ -63,7 +72,7 @@ class ImageCard extends StatelessWidget {
                           style: GoogleFonts.inter(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                            color: AppColors.textPrimaryFor(context),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -90,7 +99,7 @@ class ImageCard extends StatelessWidget {
                       image.description,
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryFor(context),
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,

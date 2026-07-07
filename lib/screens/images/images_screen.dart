@@ -35,9 +35,9 @@ class _ImagesScreenState extends State<ImagesScreen> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l.translate('error')}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l.translate('error')}: $e')));
       }
     }
   }
@@ -46,7 +46,7 @@ class _ImagesScreenState extends State<ImagesScreen> {
     final l = AppLocalizations(context.read<LanguageProvider>().locale);
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.surfaceFor(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -59,26 +59,38 @@ class _ImagesScreenState extends State<ImagesScreen> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.border,
+                color: AppColors.borderFor(context),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             const SizedBox(height: 20),
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined,
-                  color: AppColors.imagesColor),
-              title: Text(l.translate('pickFromGallery'),
-                  style: GoogleFonts.inter(color: AppColors.textPrimary)),
+              leading: const Icon(
+                Icons.photo_library_outlined,
+                color: AppColors.imagesColor,
+              ),
+              title: Text(
+                l.translate('pickFromGallery'),
+                style: GoogleFonts.inter(
+                  color: AppColors.textPrimaryFor(context),
+                ),
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(context, ImageSource.gallery);
               },
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt_outlined,
-                  color: AppColors.imagesColor),
-              title: Text(l.translate('takePhoto'),
-                  style: GoogleFonts.inter(color: AppColors.textPrimary)),
+              leading: const Icon(
+                Icons.camera_alt_outlined,
+                color: AppColors.imagesColor,
+              ),
+              title: Text(
+                l.translate('takePhoto'),
+                style: GoogleFonts.inter(
+                  color: AppColors.textPrimaryFor(context),
+                ),
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickImage(context, ImageSource.camera);
@@ -122,79 +134,167 @@ class _ImagesScreenState extends State<ImagesScreen> {
     final images = context.watch<ImagesProvider>().images;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundFor(context),
       appBar: AppBar(
         title: Text(l.translate('images')),
-        backgroundColor: AppColors.background,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_photo_alternate_rounded),
-            onPressed: () => _showPickDialog(context),
+        backgroundColor: AppColors.backgroundFor(context),
+       
+      ),
+      body: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.imagesColor.withOpacity(0.16),
+                  AppColors.secondary.withOpacity(0.1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppColors.borderFor(context).withOpacity(0.7),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.imagesColor.withOpacity(0.08),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: AppColors.imagesColor.withOpacity(0.16),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: AppColors.imagesColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l.translate('images'),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimaryFor(context),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'اجمع صورك وابدأ بعرضها في شكل أنيق ومميز',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondaryFor(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceFor(context),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '${images.length}',
+                    style: TextStyle(
+                      color: AppColors.imagesColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: images.isEmpty
+                ? EmptyState(
+                    icon: Icons.photo_library_outlined,
+                    title: l.translate('noImages'),
+                    subtitle: l.translate('noImagesSub'),
+                    iconColor: AppColors.imagesColor,
+                  )
+                : AnimationLimiter(
+                    child: GridView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: MediaQuery.of(context).size.width > 600
+                            ? 3
+                            : 2,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.6,
+                      ),
+                      itemCount: images.length,
+                      itemBuilder: (context, index) {
+                        final image = images[index];
+                        return AnimationConfiguration.staggeredGrid(
+                          position: index,
+                          columnCount: 2,
+                          duration: const Duration(milliseconds: 350),
+                          child: ScaleAnimation(
+                            child: FadeInAnimation(
+                              child: Dismissible(
+                                key: Key(image.id),
+                                direction: DismissDirection.endToStart,
+                                background: Container(
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.only(right: 16),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.error.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: const Icon(
+                                    Icons.delete_outline_rounded,
+                                    color: AppColors.error,
+                                  ),
+                                ),
+                                confirmDismiss: (_) async {
+                                  await _deleteImage(context, image.id);
+                                  return false;
+                                },
+                                child: ImageCard(
+                                  image: image,
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ImageDetailScreen(
+                                        existingImage: image,
+                                      ),
+                                    ),
+                                  ),
+                                  onFavorite: () => context
+                                      .read<ImagesProvider>()
+                                      .toggleFavorite(image),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
           ),
         ],
       ),
-      body: images.isEmpty
-          ? EmptyState(
-              icon: Icons.photo_library_outlined,
-              title: l.translate('noImages'),
-              subtitle: l.translate('noImagesSub'),
-              iconColor: AppColors.imagesColor,
-            )
-          : AnimationLimiter(
-              child: GridView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.6,
-                ),
-                itemCount: images.length,
-                itemBuilder: (context, index) {
-                  final image = images[index];
-                  return AnimationConfiguration.staggeredGrid(
-                    position: index,
-                    columnCount: 2,
-                    duration: const Duration(milliseconds: 350),
-                    child: ScaleAnimation(
-                      child: FadeInAnimation(
-                        child: Dismissible(
-                          key: Key(image.id),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 16),
-                            decoration: BoxDecoration(
-                              color: AppColors.error.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: const Icon(Icons.delete_outline_rounded,
-                                color: AppColors.error),
-                          ),
-                          confirmDismiss: (_) async {
-                            await _deleteImage(context, image.id);
-                            return false;
-                          },
-                          child: ImageCard(
-                            image: image,
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    ImageDetailScreen(existingImage: image),
-                              ),
-                            ),
-                            onFavorite: () => context
-                                .read<ImagesProvider>()
-                                .toggleFavorite(image),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showPickDialog(context),
         child: const Icon(Icons.add_photo_alternate_rounded),

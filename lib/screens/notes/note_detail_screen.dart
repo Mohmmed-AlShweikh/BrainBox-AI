@@ -75,9 +75,9 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     }
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.translate('noteSaved'))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.translate('noteSaved'))));
       Navigator.pop(context);
     }
   }
@@ -102,9 +102,9 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     final isNew = widget.noteId == null;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundFor(context),
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundFor(context),
         title: Text(isNew ? l.translate('newNote') : l.translate('editNote')),
         actions: [
           if (_isEdited || isNew)
@@ -121,108 +121,183 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title
-            TextField(
-              controller: _titleController,
-              style: GoogleFonts.inter(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.notesColor.withOpacity(0.16),
+                    AppColors.primary.withOpacity(0.08),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(
+                  color: AppColors.borderFor(context).withOpacity(0.7),
+                ),
               ),
-              decoration: InputDecoration(
-                hintText: l.translate('noteTitleHint'),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                fillColor: Colors.transparent,
-                filled: false,
-              ),
-              maxLines: null,
-              textCapitalization: TextCapitalization.sentences,
-            ),
-            const Divider(color: AppColors.border, height: 24),
-
-            // Content
-            TextField(
-              controller: _contentController,
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                color: AppColors.textPrimary,
-                height: 1.6,
-              ),
-              decoration: InputDecoration(
-                hintText: l.translate('noteContentHint'),
-                border: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                fillColor: Colors.transparent,
-                filled: false,
-              ),
-              maxLines: null,
-              minLines: 10,
-              textCapitalization: TextCapitalization.sentences,
-            ),
-
-            const SizedBox(height: 24),
-            const Divider(color: AppColors.border),
-            const SizedBox(height: 16),
-
-            // Tags
-            Text(
-              l.translate('tags'),
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 10),
-            if (_tags.isNotEmpty)
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _tags
-                    .map((tag) => TagChip(
-                          label: tag,
-                          onDelete: () =>
-                              setState(() => _tags.remove(tag)),
-                        ))
-                    .toList(),
-              ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _tagController,
-                    style: GoogleFonts.inter(
-                        fontSize: 14, color: AppColors.textPrimary),
-                    decoration: InputDecoration(
-                      hintText: l.translate('addTag'),
-                      prefixText: '# ',
-                      prefixStyle: GoogleFonts.inter(
-                          color: AppColors.primary, fontSize: 14),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
+              child: Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceFor(context),
+                      borderRadius: BorderRadius.circular(14),
                     ),
-                    onSubmitted: _addTag,
-                    textInputAction: TextInputAction.done,
+                    child: const Icon(
+                      Icons.sticky_note_2_rounded,
+                      color: AppColors.notesColor,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () => _addTag(_tagController.text),
-                  icon: const Icon(Icons.add_rounded),
-                  style: IconButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      isNew ? 'أنشئ ملاحظة جديدة' : 'عدّل ملاحظتك بوضوح',
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimaryFor(context),
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.cardFor(context),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: AppColors.borderFor(context)),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _titleController,
+                    style: GoogleFonts.inter(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimaryFor(context),
+                    ),
+                    decoration: InputDecoration(
+                      hintText: l.translate('noteTitleHint'),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      filled: false,
+                    ),
+                    maxLines: null,
+                    textCapitalization: TextCapitalization.sentences,
+                  ),
+                  const Divider(color: AppColors.border, height: 24),
+                  TextField(
+                    controller: _contentController,
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      color: AppColors.textPrimaryFor(context),
+                      height: 1.6,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: l.translate('noteContentHint'),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      filled: false,
+                    ),
+                    maxLines: null,
+                    minLines: 10,
+                    textCapitalization: TextCapitalization.sentences,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.cardFor(context),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: AppColors.borderFor(context)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l.translate('tags'),
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondaryFor(context),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  if (_tags.isNotEmpty)
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _tags
+                          .map(
+                            (tag) => TagChip(
+                              label: tag,
+                              onDelete: () => setState(() => _tags.remove(tag)),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _tagController,
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: AppColors.textPrimaryFor(context),
+                          ),
+                          decoration: InputDecoration(
+                            hintText: l.translate('addTag'),
+                            prefixText: '# ',
+                            prefixStyle: GoogleFonts.inter(
+                              color: AppColors.primary,
+                              fontSize: 14,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 10,
+                            ),
+                          ),
+                          onSubmitted: _addTag,
+                          textInputAction: TextInputAction.done,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        onPressed: () => _addTag(_tagController.text),
+                        icon: const Icon(Icons.add_rounded),
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -29,10 +29,10 @@ class TagChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? chipColor.withOpacity(0.25)
-              : AppColors.card,
+              : AppColors.cardFor(context),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? chipColor : AppColors.border,
+            color: isSelected ? chipColor : AppColors.borderFor(context),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -54,7 +54,9 @@ class TagChip extends StatelessWidget {
                 child: Icon(
                   Icons.close_rounded,
                   size: 14,
-                  color: isSelected ? chipColor : AppColors.textSecondary,
+                  color: isSelected
+                      ? chipColor
+                      : AppColors.textSecondaryFor(context),
                 ),
               ),
             ],

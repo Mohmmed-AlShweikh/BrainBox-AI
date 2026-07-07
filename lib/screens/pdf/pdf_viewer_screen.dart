@@ -21,13 +21,13 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundFor(context),
       appBar: AppBar(
         title: Text(
           widget.pdf.title,
           style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.surfaceFor(context),
         actions: [
           if (_isLoaded)
             Padding(
@@ -35,7 +35,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
               child: Text(
                 '$_currentPage / $_totalPages',
                 style: GoogleFonts.inter(
-                  color: AppColors.textSecondary,
+                  color: AppColors.textSecondaryFor(context),
                   fontSize: 13,
                 ),
               ),
@@ -51,7 +51,7 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
             autoSpacing: true,
             pageFling: true,
             nightMode: true,
-            backgroundColor: AppColors.background,
+            backgroundColor: AppColors.backgroundFor(context),
             onRender: (pages) {
               setState(() {
                 _totalPages = pages ?? 0;
@@ -68,9 +68,9 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
               _pdfController = controller;
             },
             onError: (error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error: $error')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('Error: $error')));
             },
           ),
           if (!_isLoaded)
@@ -81,25 +81,31 @@ class _PdfViewerScreenState extends State<PdfViewerScreen> {
       ),
       bottomNavigationBar: _isLoaded
           ? Container(
-              color: AppColors.surface,
+              color: AppColors.surfaceFor(context),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.chevron_left_rounded,
-                        color: AppColors.textPrimary),
+                    icon: const Icon(
+                      Icons.chevron_left_rounded,
+                      color: AppColors.textPrimary,
+                    ),
                     onPressed: _currentPage > 1
                         ? () => _pdfController?.setPage(_currentPage - 2)
                         : null,
                   ),
                   Text(
                     '$_currentPage of $_totalPages',
-                    style: GoogleFonts.inter(color: AppColors.textSecondary),
+                    style: GoogleFonts.inter(
+                      color: AppColors.textSecondaryFor(context),
+                    ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.chevron_right_rounded,
-                        color: AppColors.textPrimary),
+                    icon: const Icon(
+                      Icons.chevron_right_rounded,
+                      color: AppColors.textPrimary,
+                    ),
                     onPressed: _currentPage < _totalPages
                         ? () => _pdfController?.setPage(_currentPage)
                         : null,

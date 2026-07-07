@@ -57,11 +57,13 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
     try {
       if (widget.sourcePath != null) {
         await context.read<ImagesProvider>().addImage(
-              title: title.isEmpty ? 'Image ${DateTime.now().millisecondsSinceEpoch}' : title,
-              sourcePath: widget.sourcePath!,
-              description: _descController.text.trim(),
-              tags: _tags,
-            );
+          title: title.isEmpty
+              ? 'Image ${DateTime.now().millisecondsSinceEpoch}'
+              : title,
+          sourcePath: widget.sourcePath!,
+          description: _descController.text.trim(),
+          tags: _tags,
+        );
       } else if (widget.existingImage != null) {
         widget.existingImage!.title = title.isEmpty ? 'Untitled' : title;
         widget.existingImage!.description = _descController.text.trim();
@@ -70,17 +72,17 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.translate('imageSaved'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.translate('imageSaved'))));
         Navigator.pop(context);
       }
     } catch (e) {
       setState(() => _isSaving = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l.translate('error')}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l.translate('error')}: $e')));
       }
     }
   }
@@ -102,9 +104,9 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
     final isNew = widget.sourcePath != null;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundFor(context),
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundFor(context),
         title: Text(isNew ? l.translate('newImage') : l.translate('edit')),
         actions: [
           TextButton(
@@ -126,28 +128,106 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
         ],
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image preview
-            if (imageFile.existsSync())
-              Container(
-                width: double.infinity,
-                constraints: const BoxConstraints(maxHeight: 300),
-                child: Image.file(imageFile, fit: BoxFit.cover),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.imagesColor.withOpacity(0.16),
+                    AppColors.secondary.withOpacity(0.1),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(
+                  color: AppColors.borderFor(context).withOpacity(0.7),
+                ),
               ),
-            Padding(
-              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceFor(context),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.photo_rounded,
+                      color: AppColors.imagesColor,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      isNew ? 'أضف صورة جديدة' : 'حرّر تفاصيل الصورة',
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimaryFor(context),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.cardFor(context),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: AppColors.borderFor(context)),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.imagesColor.withOpacity(0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: imageFile.existsSync()
+                    ? Image.file(
+                        imageFile,
+                        fit: BoxFit.cover,
+                        height: 260,
+                        width: double.infinity,
+                      )
+                    : Container(
+                        height: 260,
+                        width: double.infinity,
+                        color: AppColors.surfaceFor(context),
+                        child: Icon(
+                          Icons.broken_image_outlined,
+                          size: 48,
+                          color: AppColors.textHintFor(context),
+                        ),
+                      ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.cardFor(context),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: AppColors.borderFor(context)),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title
                   TextField(
                     controller: _titleController,
                     style: GoogleFonts.inter(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: AppColors.textPrimaryFor(context),
                     ),
                     decoration: InputDecoration(
                       hintText: l.translate('noteTitleHint'),
@@ -155,11 +235,12 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Description
                   TextField(
                     controller: _descController,
                     style: GoogleFonts.inter(
-                        fontSize: 14, color: AppColors.textPrimary),
+                      fontSize: 14,
+                      color: AppColors.textPrimaryFor(context),
+                    ),
                     decoration: InputDecoration(
                       hintText: l.translate('imageDescriptionHint'),
                       labelText: l.translate('imageDescription'),
@@ -167,13 +248,13 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
                     maxLines: 3,
                   ),
                   const SizedBox(height: 16),
-                  // Tags
                   Text(
                     l.translate('tags'),
                     style: GoogleFonts.inter(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondaryFor(context),
+                    ),
                   ),
                   const SizedBox(height: 8),
                   if (_tags.isNotEmpty)
@@ -181,11 +262,12 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
                       spacing: 8,
                       runSpacing: 8,
                       children: _tags
-                          .map((tag) => TagChip(
-                                label: tag,
-                                onDelete: () =>
-                                    setState(() => _tags.remove(tag)),
-                              ))
+                          .map(
+                            (tag) => TagChip(
+                              label: tag,
+                              onDelete: () => setState(() => _tags.remove(tag)),
+                            ),
+                          )
                           .toList(),
                     ),
                   const SizedBox(height: 8),
@@ -195,10 +277,12 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
                         child: TextField(
                           controller: _tagController,
                           decoration: InputDecoration(
-                              hintText: l.translate('addTag'),
-                              prefixText: '# ',
-                              prefixStyle: GoogleFonts.inter(
-                                  color: AppColors.imagesColor)),
+                            hintText: l.translate('addTag'),
+                            prefixText: '# ',
+                            prefixStyle: GoogleFonts.inter(
+                              color: AppColors.imagesColor,
+                            ),
+                          ),
                           onSubmitted: _addTag,
                         ),
                       ),

@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
     final pdfs = context.watch<PdfProvider>();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundFor(context),
       body: CustomScrollView(
         slivers: [
           // App bar
@@ -43,7 +43,7 @@ class HomeScreen extends StatelessWidget {
             expandedHeight: 120,
             floating: true,
             pinned: true,
-            backgroundColor: AppColors.background,
+            backgroundColor: AppColors.backgroundFor(context),
             flexibleSpace: FlexibleSpaceBar(
               background: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 60, 20, 0),
@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
                               l.translate(_greeting()),
                               style: GoogleFonts.inter(
                                 fontSize: 13,
-                                color: AppColors.textSecondary,
+                                color: AppColors.textSecondaryFor(context),
                               ),
                             ),
                             Text(
@@ -68,7 +68,7 @@ class HomeScreen extends StatelessWidget {
                               style: GoogleFonts.inter(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
+                                color: AppColors.textPrimaryFor(context),
                                 letterSpacing: -0.5,
                               ),
                             ),
@@ -77,15 +77,25 @@ class HomeScreen extends StatelessWidget {
                         Row(
                           children: [
                             _iconButton(
+                              context: context,
                               icon: Icons.search_rounded,
-                              onTap: () => Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) => const SearchScreen())),
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const SearchScreen(),
+                                ),
+                              ),
                             ),
                             const SizedBox(width: 8),
                             _iconButton(
+                              context: context,
                               icon: Icons.settings_outlined,
-                              onTap: () => Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const SettingsScreen(),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -101,6 +111,66 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary.withOpacity(0.15),
+                        AppColors.secondary.withOpacity(0.1),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: AppColors.borderFor(context).withOpacity(0.7),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceFor(context),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Icon(
+                          Icons.dashboard_rounded,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l.translate('appName'),
+                              style: GoogleFonts.inter(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimaryFor(context),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'كل شيء في مكان واحد، مرتب ومرتبّ بشكل جميل',
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                color: AppColors.textSecondaryFor(context),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
                 // Stats row
                 GridView.count(
                   shrinkWrap: true,
@@ -144,8 +214,8 @@ class HomeScreen extends StatelessWidget {
                   l.translate('quickActions'),
                   style: GoogleFonts.inter(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimaryFor(context),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -156,8 +226,12 @@ class HomeScreen extends StatelessWidget {
                         icon: Icons.timeline_rounded,
                         label: l.translate('timeline'),
                         color: AppColors.timelineColor,
-                        onTap: () => Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => const TimelineScreen())),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const TimelineScreen(),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -166,8 +240,12 @@ class HomeScreen extends StatelessWidget {
                         icon: Icons.psychology_rounded,
                         label: l.translate('askBrainBox'),
                         color: AppColors.askColor,
-                        onTap: () => Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => const AskBrainBoxScreen())),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AskBrainBoxScreen(),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -184,22 +262,24 @@ class HomeScreen extends StatelessWidget {
                         l.translate('recentItems'),
                         style: GoogleFonts.inter(
                           fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimaryFor(context),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  ...notes.recent.map((note) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: NoteCard(
-                          note: note,
-                          onTap: () {},
-                          onFavorite: () =>
-                              context.read<NotesProvider>().toggleFavorite(note),
-                        ),
-                      )),
+                  ...notes.recent.map(
+                    (note) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: NoteCard(
+                        note: note,
+                        onTap: () {},
+                        onFavorite: () =>
+                            context.read<NotesProvider>().toggleFavorite(note),
+                      ),
+                    ),
+                  ),
                 ] else ...[
                   const SizedBox(height: 24),
                   EmptyState(
@@ -216,18 +296,29 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _iconButton({required IconData icon, required VoidCallback onTap}) {
+  Widget _iconButton({
+    required BuildContext context,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppColors.card,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          color: AppColors.cardFor(context),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.borderFor(context)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        child: Icon(icon, color: AppColors.textSecondary, size: 20),
+        child: Icon(icon, color: AppColors.textSecondaryFor(context), size: 20),
       ),
     );
   }
@@ -241,11 +332,18 @@ class HomeScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 18),
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(color: color.withOpacity(0.3)),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: Column(
           children: [

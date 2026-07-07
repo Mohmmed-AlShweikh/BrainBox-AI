@@ -42,9 +42,9 @@ class _SearchScreenState extends State<SearchScreen> {
     final searchProvider = context.watch<SearchProvider>();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundFor(context),
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundFor(context),
         titleSpacing: 0,
         title: Padding(
           padding: const EdgeInsets.only(right: 16),
@@ -53,7 +53,9 @@ class _SearchScreenState extends State<SearchScreen> {
             focusNode: _focusNode,
             onChanged: (v) => context.read<SearchProvider>().search(v),
             style: GoogleFonts.inter(
-                color: AppColors.textPrimary, fontSize: 15),
+              color: AppColors.textPrimaryFor(context),
+              fontSize: 15,
+            ),
             decoration: InputDecoration(
               hintText: l.translate('searchHint'),
               border: InputBorder.none,
@@ -63,8 +65,11 @@ class _SearchScreenState extends State<SearchScreen> {
               filled: false,
               suffixIcon: searchProvider.hasQuery
                   ? IconButton(
-                      icon: const Icon(Icons.close_rounded,
-                          color: AppColors.textHint, size: 18),
+                      icon: Icon(
+                        Icons.close_rounded,
+                        color: AppColors.textHintFor(context),
+                        size: 18,
+                      ),
                       onPressed: () {
                         _searchController.clear();
                         context.read<SearchProvider>().clear();
@@ -83,24 +88,44 @@ class _SearchScreenState extends State<SearchScreen> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: Row(
               children: [
-                _filterChip(context, l.translate('filterAll'), null,
-                    searchProvider.filter),
+                _filterChip(
+                  context,
+                  l.translate('filterAll'),
+                  null,
+                  searchProvider.filter,
+                ),
                 const SizedBox(width: 8),
-                _filterChip(context, l.translate('filterNotes'),
-                    SearchResultType.note, searchProvider.filter),
+                _filterChip(
+                  context,
+                  l.translate('filterNotes'),
+                  SearchResultType.note,
+                  searchProvider.filter,
+                ),
                 const SizedBox(width: 8),
-                _filterChip(context, l.translate('filterImages'),
-                    SearchResultType.image, searchProvider.filter),
+                _filterChip(
+                  context,
+                  l.translate('filterImages'),
+                  SearchResultType.image,
+                  searchProvider.filter,
+                ),
                 const SizedBox(width: 8),
-                _filterChip(context, l.translate('filterVoice'),
-                    SearchResultType.voice, searchProvider.filter),
+                _filterChip(
+                  context,
+                  l.translate('filterVoice'),
+                  SearchResultType.voice,
+                  searchProvider.filter,
+                ),
                 const SizedBox(width: 8),
-                _filterChip(context, l.translate('filterPdfs'),
-                    SearchResultType.pdf, searchProvider.filter),
+                _filterChip(
+                  context,
+                  l.translate('filterPdfs'),
+                  SearchResultType.pdf,
+                  searchProvider.filter,
+                ),
               ],
             ),
           ),
-          const Divider(color: AppColors.border, height: 1),
+          Divider(color: AppColors.borderFor(context), height: 1),
           const SizedBox(height: 8),
           // Results
           Expanded(
@@ -112,39 +137,43 @@ class _SearchScreenState extends State<SearchScreen> {
                     iconColor: AppColors.primary,
                   )
                 : searchProvider.results.isEmpty
-                    ? EmptyState(
-                        icon: Icons.search_off_rounded,
-                        title: l.translate('noResults'),
-                        subtitle: l.translate('noDataSub'),
-                        iconColor: AppColors.textHint,
-                      )
-                    : AnimationLimiter(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
-                          itemCount: searchProvider.results.length,
-                          itemBuilder: (context, index) {
-                            final result = searchProvider.results[index];
-                            return AnimationConfiguration.staggeredList(
-                              position: index,
-                              duration: const Duration(milliseconds: 300),
-                              child: SlideAnimation(
-                                verticalOffset: 20,
-                                child: FadeInAnimation(
-                                  child: _buildResultCard(context, result),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                ? EmptyState(
+                    icon: Icons.search_off_rounded,
+                    title: l.translate('noResults'),
+                    subtitle: l.translate('noDataSub'),
+                    iconColor: AppColors.textHintFor(context),
+                  )
+                : AnimationLimiter(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
+                      itemCount: searchProvider.results.length,
+                      itemBuilder: (context, index) {
+                        final result = searchProvider.results[index];
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 300),
+                          child: SlideAnimation(
+                            verticalOffset: 20,
+                            child: FadeInAnimation(
+                              child: _buildResultCard(context, result),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
           ),
         ],
       ),
     );
   }
 
-  Widget _filterChip(BuildContext context, String label,
-      SearchResultType? type, SearchResultType? current) {
+  Widget _filterChip(
+    BuildContext context,
+    String label,
+    SearchResultType? type,
+    SearchResultType? current,
+  ) {
     final isSelected = current == type;
     return GestureDetector(
       onTap: () => context.read<SearchProvider>().setFilter(type),
@@ -152,10 +181,12 @@ class _SearchScreenState extends State<SearchScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.card,
+          color: isSelected ? AppColors.primary : AppColors.cardFor(context),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected
+                ? AppColors.primary
+                : AppColors.borderFor(context),
           ),
         ),
         child: Text(
@@ -163,7 +194,9 @@ class _SearchScreenState extends State<SearchScreen> {
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w500,
-            color: isSelected ? Colors.white : AppColors.textSecondary,
+            color: isSelected
+                ? Colors.white
+                : AppColors.textSecondaryFor(context),
           ),
         ),
       ),
@@ -196,9 +229,9 @@ class _SearchScreenState extends State<SearchScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.cardFor(context),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderFor(context)),
       ),
       child: Row(
         children: [
@@ -221,7 +254,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: AppColors.textPrimaryFor(context),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -231,7 +264,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   result.subtitle,
                   style: GoogleFonts.inter(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: AppColors.textSecondaryFor(context),
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

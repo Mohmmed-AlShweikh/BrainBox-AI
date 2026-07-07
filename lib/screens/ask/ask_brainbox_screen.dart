@@ -3,7 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../../core/app_colors.dart';
+import '../../models/image_model.dart';
+import '../../models/pdf_model.dart';
 import '../../providers/language_provider.dart';
+import '../../screens/images/image_detail_screen.dart';
+import '../../screens/notes/note_detail_screen.dart';
+import '../../screens/pdf/pdf_viewer_screen.dart';
+import '../../screens/voice/voice_notes_screen.dart';
 import '../../services/search_service.dart';
 import '../../utils/app_localizations.dart';
 
@@ -44,6 +50,9 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
     final question = _questionController.text.trim();
     if (question.isEmpty) return;
 
+    FocusScope.of(context).unfocus();
+    _questionController.clear();
+
     setState(() {
       _isThinking = true;
       _currentQuestion = question;
@@ -61,6 +70,42 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
       );
       _isThinking = false;
     });
+  }
+
+  Future<void> _openResult(SearchResult result) async {
+    switch (result.type) {
+      case SearchResultType.note:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => NoteDetailScreen(noteId: result.id),
+          ),
+        );
+        break;
+      case SearchResultType.image:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                ImageDetailScreen(existingImage: result.data as ImageModel),
+          ),
+        );
+        break;
+      case SearchResultType.voice:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const VoiceNotesScreen()),
+        );
+        break;
+      case SearchResultType.pdf:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PdfViewerScreen(pdf: result.data as PdfModel),
+          ),
+        );
+        break;
+    }
   }
 
   Color _typeColor(SearchResultType type) {
@@ -95,10 +140,10 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.backgroundFor(context),
       appBar: AppBar(
         title: Text(l.translate('askTitle')),
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundFor(context),
       ),
       body: Column(
         children: [
@@ -131,8 +176,11 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                                 ),
                               ],
                             ),
-                            child: const Icon(Icons.psychology_rounded,
-                                color: Colors.white, size: 40),
+                            child: const Icon(
+                              Icons.psychology_rounded,
+                              color: Colors.white,
+                              size: 40,
+                            ),
                           ),
                           const SizedBox(height: 20),
                           Text(
@@ -140,7 +188,7 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                             style: GoogleFonts.inter(
                               fontSize: 20,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
+                              color: AppColors.textPrimaryFor(context),
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -149,7 +197,7 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                             l.translate('askWelcomeSub'),
                             style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: AppColors.textSecondary,
+                              color: AppColors.textSecondaryFor(context),
                               height: 1.5,
                             ),
                             textAlign: TextAlign.center,
@@ -161,7 +209,7 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.textSecondary,
+                              color: AppColors.textSecondaryFor(context),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -177,18 +225,23 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 14, vertical: 8),
+                                    horizontal: 14,
+                                    vertical: 8,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.card,
+                                    color: AppColors.cardFor(context),
                                     borderRadius: BorderRadius.circular(20),
-                                    border:
-                                        Border.all(color: AppColors.border),
+                                    border: Border.all(
+                                      color: AppColors.borderFor(context),
+                                    ),
                                   ),
                                   child: Text(
                                     q,
                                     style: GoogleFonts.inter(
                                       fontSize: 13,
-                                      color: AppColors.textSecondary,
+                                      color: AppColors.textSecondaryFor(
+                                        context,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -207,12 +260,13 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                       child: Column(
                         children: [
                           const CircularProgressIndicator(
-                              color: AppColors.askColor),
+                            color: AppColors.askColor,
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             l.translate('thinking'),
                             style: GoogleFonts.inter(
-                              color: AppColors.textSecondary,
+                              color: AppColors.textSecondaryFor(context),
                               fontSize: 14,
                             ),
                           ),
@@ -228,10 +282,12 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                       alignment: Alignment.centerRight,
                       child: Container(
                         constraints: BoxConstraints(
-                            maxWidth:
-                                MediaQuery.of(context).size.width * 0.75),
+                          maxWidth: MediaQuery.of(context).size.width * 0.75,
+                        ),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
                           gradient: AppColors.primaryGradient,
                           borderRadius: const BorderRadius.only(
@@ -262,28 +318,33 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                             color: AppColors.askColor.withOpacity(0.2),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.psychology_rounded,
-                              size: 16, color: AppColors.askColor),
+                          child: const Icon(
+                            Icons.psychology_rounded,
+                            size: 16,
+                            color: AppColors.askColor,
+                          ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Container(
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: AppColors.card,
+                              color: AppColors.cardFor(context),
                               borderRadius: const BorderRadius.only(
                                 topRight: Radius.circular(16),
                                 bottomLeft: Radius.circular(16),
                                 bottomRight: Radius.circular(16),
                               ),
-                              border: Border.all(color: AppColors.border),
+                              border: Border.all(
+                                color: AppColors.borderFor(context),
+                              ),
                             ),
                             child: Text(
                               _result!.answer ?? l.translate('noAnswer'),
                               style: GoogleFonts.inter(
                                 color: _result!.answer != null
-                                    ? AppColors.textPrimary
-                                    : AppColors.textSecondary,
+                                    ? AppColors.textPrimaryFor(context)
+                                    : AppColors.textSecondaryFor(context),
                                 fontSize: 14,
                                 height: 1.5,
                               ),
@@ -301,7 +362,7 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textSecondary,
+                          color: AppColors.textSecondaryFor(context),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -325,7 +386,7 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                         l.translate('noAnswerSub'),
                         style: GoogleFonts.inter(
                           fontSize: 13,
-                          color: AppColors.textSecondary,
+                          color: AppColors.textSecondaryFor(context),
                         ),
                       ),
                     ],
@@ -338,10 +399,16 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
           // Input area
           Container(
             padding: EdgeInsets.fromLTRB(
-                16, 12, 16, MediaQuery.of(context).viewInsets.bottom + 16),
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
-              border: Border(top: BorderSide(color: AppColors.border)),
+              16,
+              12,
+              16,
+              MediaQuery.of(context).viewInsets.bottom + 16,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceFor(context),
+              border: Border(
+                top: BorderSide(color: AppColors.borderFor(context)),
+              ),
             ),
             child: Row(
               children: [
@@ -349,11 +416,15 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                   child: TextField(
                     controller: _questionController,
                     style: GoogleFonts.inter(
-                        color: AppColors.textPrimary, fontSize: 14),
+                      color: AppColors.textPrimaryFor(context),
+                      fontSize: 14,
+                    ),
                     decoration: InputDecoration(
                       hintText: l.translate('askHint'),
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                     onSubmitted: (_) => _ask(),
                     textInputAction: TextInputAction.send,
@@ -377,8 +448,11 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Icon(Icons.send_rounded,
-                            color: Colors.white, size: 20),
+                        : const Icon(
+                            Icons.send_rounded,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                   ),
                 ),
               ],
@@ -392,53 +466,63 @@ class _AskBrainBoxScreenState extends State<AskBrainBoxScreen> {
   Widget _buildResultCard(SearchResult result) {
     final color = _typeColor(result.type);
     final icon = _typeIcon(result.type);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
+    return GestureDetector(
+      onTap: () => _openResult(result),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.cardFor(context),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderFor(context)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.askColor.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
-            child: Icon(icon, color: color, size: 18),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  result.title,
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  result.subtitle,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 18),
             ),
-          ),
-        ],
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    result.title,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimaryFor(context),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    result.subtitle,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: AppColors.textSecondaryFor(context),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
